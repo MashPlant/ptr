@@ -84,12 +84,14 @@ impl<T: ?Sized> Display for P<T> {
   fn fmt(&self, f: &mut Formatter) -> Result { self.0.fmt(f) }
 }
 
-impl<T: ?Sized + PartialEq> PartialEq for R<T> {
-  #[inline(always)]
-  fn eq(&self, other: &Self) -> bool { self.get() == other.get() }
+pub trait IntoP<T: ?Sized> {
+  fn p(self) -> P<T>;
 }
 
-impl<T: ?Sized + Eq> Eq for R<T> {}
+impl<T: ?Sized, U: Into<P<T>>> IntoP<T> for U {
+  #[inline(always)]
+  fn p(self) -> P<T> { self.into() }
+}
 
 impl<T: ?Sized> R<T> {
   #[inline(always)]
@@ -132,6 +134,13 @@ impl<T: ?Sized> From<P<T>> for R<T> {
   fn from(x: P<T>) -> Self { R(x.0) }
 }
 
+impl<T: ?Sized + PartialEq> PartialEq for R<T> {
+  #[inline(always)]
+  fn eq(&self, other: &Self) -> bool { self.get() == other.get() }
+}
+
+impl<T: ?Sized + Eq> Eq for R<T> {}
+
 impl<T: ?Sized + PartialOrd> PartialOrd for R<T> {
   #[inline(always)]
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> { (*self.get()).partial_cmp(other.get()) }
@@ -155,4 +164,13 @@ impl<T: ?Sized + Debug> Debug for R<T> {
 impl<T: ?Sized + Display> Display for R<T> {
   #[inline(always)]
   fn fmt(&self, f: &mut Formatter) -> Result { self.get().fmt(f) }
+}
+
+pub trait IntoR<T: ?Sized> {
+  fn r(self) -> R<T>;
+}
+
+impl<T: ?Sized, U: Into<R<T>>> IntoR<T> for U {
+  #[inline(always)]
+  fn r(self) -> R<T> { self.into() }
 }
