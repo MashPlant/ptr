@@ -37,6 +37,10 @@ impl<T: ?Sized> Clone for P<T> {
 
 impl<T: ?Sized> Copy for P<T> {}
 
+unsafe impl<T: ?Sized> Send for P<T> {}
+
+unsafe impl<T: ?Sized> Sync for P<T> {}
+
 impl<T: ?Sized> From<&T> for P<T> {
   #[inline(always)]
   fn from(x: &T) -> Self { P(x.into()) }
@@ -118,6 +122,10 @@ impl<T: ?Sized> Clone for R<T> {
 }
 
 impl<T: ?Sized> Copy for R<T> {}
+
+unsafe impl<T: ?Sized> Send for R<T> {}
+
+unsafe impl<T: ?Sized> Sync for R<T> {}
 
 impl<T: ?Sized> From<&T> for R<T> {
   #[inline(always)]
